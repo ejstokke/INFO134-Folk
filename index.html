@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+  <title>Semesteroppgave</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="css/master.css">
+  <link href="https://fonts.googleapis.com/css?family=Space+Mono" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <header>
+      <nav class="nav">
+        <h1>Folk</h1>
+        <ul>
+          <li><button type="button" id="introButton" value="intro" onclick="navigate(this.value);">Introduksjon</button></li>
+          <li><button type="button" id="overviewButton" value="overview" onclick="navigate(this.value);">Oversikt</button></li>
+          <li><button type="button" id="detailsButton" value="details" onclick="navigate(this.value);">Detaljer</button></li>
+          <li><button type="button" id="comparisonButton" value="comparison" onclick="navigate(this.value);">Sammenligning</button></li>
+        </ul>
+      </nav>
+    </header>
+    <div id="intro" class="visible">
+      <h2>Introduksjon</h2>
+      <p>
+        Dette er et verktøy for å vise data om Norges befolkning. Dette verktøyet består
+        av fire sider:
+      </p>
+      <ul>
+        <li>
+          Introduksjon - Denne siden, inneholder lenker til SSBs offisielle sider
+        </li>
+        <li>
+          Oversikt - En tabell som viser alle kommuner med kommunenummer og total befolkning
+        </li>
+        <li>
+          Detaljer - En side som gir mulighet til å skrive inn et kommunenummer og få en tabell med historisk data
+          om befolkning, sysselsetting og utdanning for den kommunen.
+        <li>
+          Sammenligning - En side hvor man kan skrive inn to kommunenummer og se historisk data om sysselsetting
+          for disse kommunene.
+        </li>
+      </ul>
+      <p>
+        Det benyttes tre filer med informasjon om Norges befolkning. Disse er i utgangspunktet hentet fra SSB,
+        men med noen detaljer fjernet. Derfor inneholder dataene noen unøyaktigheter.
+      </p>
+      <p>
+        Lenker til SSB sine offisielle sider:
+      </p>
+      <ul>
+        <li>
+          <a href="https://www.ssb.no/"><strong>SSB</strong></a>
+        </li>
+        <li>
+          <a href="http://data.ssb.no/api/v0/dataset/104857?lang=no"><strong>Befolkning </strong>Datasett nummer 104857</a>
+        </li>
+        <li>
+          <a href="http://data.ssb.no/api/v0/dataset/100145?lang=no"><strong>Sysselsatte </strong>Datasett nummer 100145</a>
+        </li>
+        <li>
+          <a href="http://data.ssb.no/api/v0/dataset/85432?lang=no"><strong>Utdanning </strong>Datasett nummer 85432</a>
+        </li>
+      </ul>
+    </div>
+    <div id="overview" class="hidden">
+      <h2>Oversikt</h2>
+      <section class="container">
+        <table id="overviewTable">
+          <thead>
+            <tr>
+              <th>Kommune</th>
+              <th>KommuneNr</th>
+              <th>Befolkning</th>
+            </tr>
+          </thead>
+          <tbody id="overviewContent"><tbody>
+        </table>
+      </section>
+    </div>
+    <div id="details" class="hidden">
+      <h2>Detaljer</h2>
+      <p>Skriv inn kommunenummer:</p>
+
+      <input type="text" id="detailsNr"></input>
+      <input type="button" value="Send" onclick="createDetails(befolkning, sysselsatte, utdanning);"></input>
+      <p><textarea rows="6" cols="50" id="detailsResult" readonly></textarea></p>
+
+      <section class="detailsContainer">
+        <table id="detailsTable" class="compareTable">
+          <thead class="verticalHead">
+            <tr>
+              <th rowspan="3">År</th>
+              <th colspan="3">Befolkning (antall)</th>
+              <th colspan="3">Sysselsetting (prosent)</th>
+              <th colspan="12">Utdanning (prosent)</th>
+            </tr>
+            <tr>
+              <th rowspan="2">Menn</th>
+              <th rowspan="2">Kvinner</th>
+              <th rowspan="2">Totalt</th>
+              <th rowspan="2">Menn</th>
+              <th rowspan="2">Kvinner</th>
+              <th rowspan="2">Totalt</th>
+              <th colspan="2">Grunnskole</th>
+              <th colspan="2">Videregående skole</th>
+              <th colspan="2">Fagskole</th>
+              <th colspan="2">Universitet & høyskole (kort)</th>
+              <th colspan="2">Universitet & høyskole (lang)</th>
+              <th colspan="2">Uoppgitt</th>
+            </tr>
+            <tr>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+            </tr>
+          </thead>
+          <thead class="horizontalHead">
+            <tr>
+              <th>År</th>
+              <th>Befolkning - Menn</th>
+              <th>Befolkning - Kvinner</th>
+              <th>Befolkning - Totalt</th>
+              <th>Sysselsetting - Menn</th>
+              <th>Sysselsetting - Kvinner</th>
+              <th>Sysselsetting - Totalt</th>
+              <th>Grunnskole - Menn</th>
+              <th>Grunnskole - Kvinner</th>
+              <th>Videregående skole - Menn</th>
+              <th>Videregående skole - Kvinner</th>
+              <th>Fagskole - Menn</th>
+              <th>Fagskole - Kvinner</th>
+              <th>Universitet & høyskole (kort) - Menn</th>
+              <th>Universitet & høyskole (kort) - Kvinner</th>
+              <th>Universitet & høyskole (lang) - Menn</th>
+              <th>Universitet & høyskole (lang) - Kvinner</th>
+              <th>Uoppgitt - Menn</th>
+              <th>Uoppgitt - Kvinner</th>
+            </tr>
+          </thead>
+          <tbody id="detailsContent">
+          </tbody>
+        </table>
+      </section>
+    </div>
+    <div id="comparison" class="hidden">
+      <h2>Sammenligning</h2>
+      <p>
+        Skriv inn to kommunenummer for å sammenligne vekst i sysselsetting.
+        <br>
+        Kommunen med størst vekst markeres i fet tekst for hver kjønnskategori.
+      </p>
+
+      <input type="text" id="compareIdOne"></input>
+      <input type="text" id="compareIdTwo"></input>
+      <input type="button" value="Send" onclick="createComparison(sysselsatte);"></input>
+
+      <section class="detailsContainer">
+        <table class="compareTable">
+          <thead class="verticalHead">
+            <tr>
+              <th id="navn1" colspan="5">Kommune: </th>
+            </tr>
+            <tr>
+              <th colspan="5">Sysselsetting</th>
+            </tr>
+            <tr>
+              <th>År</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Vekst menn</th>
+              <th>Vekst kvinner</th>
+            </tr>
+          </thead>
+          <thead class="horizontalHead">
+            <h3 id="navn1Vert"></h3>
+            <tr>
+              <th>År</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Vekst menn</th>
+              <th>Vekst kvinner</th>
+            </tr>
+          </thead>
+          <tbody id="compareContentOne">
+          </tbody>
+        </table>
+        <table class="compareTable">
+          <thead class="verticalHead">
+            <tr>
+              <th id="navn2" colspan="5">Kommune: </th>
+            </tr>
+            <tr>
+              <th colspan="5">Sysselsetting</th>
+            </tr>
+            <tr>
+              <th>År</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Vekst menn</th>
+              <th>Vekst kvinner</th>
+            </tr>
+          </thead>
+          <thead class="horizontalHead">
+            <h3 id="navn2Vert"></h3>
+            <tr>
+              <th>År</th>
+              <th>Menn</th>
+              <th>Kvinner</th>
+              <th>Vekst menn</th>
+              <th>Vekst kvinner</th>
+            </tr>
+          </thead>
+          <tbody id="compareContentTwo">
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+  <footer>
+    <span>Dette er en oppgavebesvarelse i emnet INFO134</span>
+  </footer>
+</body>
+<script type="text/javascript" src="js/navigation.js"></script>
+<script type="text/javascript" src="js/datasets.js"></script>
+</html>
